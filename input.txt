@@ -1,0 +1,5 @@
+foreach (int i in list) {
+  if (i > 0) {
+    sum = 1 + i;
+  }
+}
