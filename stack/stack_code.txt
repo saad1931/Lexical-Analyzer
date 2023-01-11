@@ -1,0 +1,98 @@
+Muhammad Saad 10155
+Ashaj bin Arshad 10097
+Humayun Ayaz 9742
+Areeb Ali 10112
+
+
+
+							Stack code
+===========================================================================================================================
+class Rule:
+  def __init__(self, lhs, rhs):
+    self.lhs = lhs
+    self.rhs = rhs
+
+# The input to be parsed
+input = "foreach ( i = 0 ; i < 10 ; i ++ ) S"
+
+# The stack used to store the parser's state
+stack = []
+
+# A function that applies a rule to the top of the stack
+def apply_rule(rule):
+  # Pop the right-hand side of the rule off the stack
+  rhs = stack[-len(rule.rhs):]
+  del stack[-len(rule.rhs):]
+
+  # Push the left-hand side of the rule onto the stack
+  stack.append(rule.lhs)
+
+# A function that attempts to parse the input
+def parse():
+  # Split the input into a list of tokens
+  tokens = input.split()
+
+  # Initialize the stack with the first token from the input
+  stack.append(tokens[0])
+
+  # Continue applying rules until the stack is empty
+  while stack:
+    # Peek at the top symbol on the stack
+    top_symbol = stack[-1]
+
+    # Check if the top symbol is a terminal
+    if top_symbol in terminals:
+      # If it is, check if the top symbol matches the next token in the input
+      if top_symbol == tokens[0]:
+        # If it does, pop the symbol off the stack and move to the next token
+        stack.pop()
+        tokens.pop(0)
+      else:
+        # If it doesn't, the input is not valid according to the grammar
+        return False
+    else:
+      # If the top symbol is not a terminal, it must be a nonterminal
+      # In this case, we need to find a rule to apply to it
+      for rule in rules:
+        # Check if the rule's left-hand side matches the top symbol on the stack
+        if rule.lhs == top_symbol:
+          # Check if the right-hand side of the rule matches the next symbols in the input
+          if rule.rhs == tokens[:len(rule.rhs)]:
+            # If it does, apply the rule and break out of the loop
+            apply_rule(rule)
+            break
+      else:
+        # If no matching rule was found, the input is not valid according to the grammar
+        return False
+
+  # If the stack is empty and there are no more tokens in the input, the input was successfully parsed
+  return True
+
+
+# Define the terminals and nonterminals for the grammar
+terminals = ['foreach', '(', ')', ';', '<', '>', '<=', '>=', '==', '!=', '++', '--']
+nonterminals = ['S', 'E', 'C', 'U']
+
+# Define the rules for the grammar
+rules = [
+  Rule('S', ['foreach', '(', 'E', ';', 'C', ';', 'U', ')', 'S']),
+  Rule('S', ['foreach', '(', 'E', ';', 'C', ';', 'U', ')']),
+  Rule('E', ['id', '=', 'E']),
+  Rule('C', ['id', '<', 'E']),
+  Rule('C', ['id', '>', 'E']),
+  Rule('C', ['id', '<=', 'E']),
+  Rule('C', ['id', '>=', 'E']),
+  Rule('C', ['id', '==', 'E']),
+  Rule('C', ['id', '!=', 'E']),
+  Rule('U', ['id', '++']),
+  Rule('U', ['id', '--']),
+]
+
+# Parse the input
+result = parse()
+
+# Print the result
+if result:
+  print("The input was successfully parsed according to the given grammar.")
+else:
+  print("The input was not valid according to the given grammar.")
